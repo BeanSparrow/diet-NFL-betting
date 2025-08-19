@@ -16,8 +16,16 @@ depends_on = None
 
 
 def upgrade():
-    # Add is_admin column to users table
-    op.add_column('users', sa.Column('is_admin', sa.Boolean(), nullable=False, default=False))
+    # Add is_admin column to users table (SQLite compatible)
+    # First add as nullable, then update all values, then make non-nullable
+    op.add_column('users', sa.Column('is_admin', sa.Boolean(), nullable=True, default=False))
+    
+    # Update all existing users to have is_admin = False
+    from sqlalchemy import text
+    op.execute(text('UPDATE users SET is_admin = 0 WHERE is_admin IS NULL'))
+    
+    # Note: SQLite doesn't support ALTER COLUMN to change nullable, 
+    # but the column will effectively be NOT NULL since all values are set
 
 
 def downgrade():

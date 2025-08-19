@@ -1,14 +1,12 @@
 """Admin routes for managing the Diet NFL Betting application"""
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from functools import wraps
 from app.models import User, Game, Bet, get_current_user
 from app import db
+from app.routes import admin_bp
 from datetime import datetime, timezone
 from sqlalchemy import func, desc
-
-# Create admin blueprint
-admin_bp = Blueprint('admin', __name__)
 
 def admin_required(f):
     """Decorator to require admin access"""
