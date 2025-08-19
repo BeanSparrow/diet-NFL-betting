@@ -3,59 +3,174 @@
 {% block title %}About - Diet NFL Betting{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <h1>About Diet NFL Betting</h1>
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl mb-6">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">About Diet NFL Betting</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">The ultimate play-money NFL betting platform for Discord communities - all the excitement, zero the risk!</p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <!-- What is Diet NFL Betting -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">What is Diet NFL Betting?</h2>
+            </div>
+            <p class="text-gray-700 mb-4 leading-relaxed">
+                Diet NFL Betting is a revolutionary play-money betting platform designed specifically for Discord communities who want to experience the thrill of NFL betting without any real financial risk.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                Our platform seamlessly integrates with Discord, allowing community members to compete against each other throughout the NFL season using virtual currency. It's perfect for adding excitement to your server's game day experience!
+            </p>
+        </div>
+
+        <!-- Developer Info -->
+        <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Built with ❤️</h2>
+            </div>
+            <p class="text-gray-700 mb-4 leading-relaxed">
+                Diet NFL Betting was created and developed by <strong class="text-purple-600">Beansparrow</strong>, a passionate developer who wanted to bring the excitement of NFL betting to Discord communities in a safe, fun way.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                Built using modern web technologies including Flask, Python, and PostgreSQL, this platform is designed to be reliable, fast, and user-friendly for communities of all sizes.
+            </p>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+        <div class="flex items-center mb-8">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">Key Features</h2>
+        </div>
         
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>What is Diet NFL Betting?</h3>
-                <p>
-                    Diet NFL Betting is a play-money betting platform designed for Discord communities
-                    who want to enjoy the excitement of NFL betting without any real financial risk.
-                </p>
-                <p>
-                    Our platform integrates seamlessly with Discord, allowing community members to
-                    compete against each other throughout the NFL season using virtual currency.
-                </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Discord Integration</h3>
+                    <p class="text-sm text-gray-600">Login seamlessly with your Discord account</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Play Money System</h3>
+                    <p class="text-sm text-gray-600">Start with $10,000 virtual currency</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Simple Betting</h3>
+                    <p class="text-sm text-gray-600">Just pick winners - no complex spreads</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Live Updates</h3>
+                    <p class="text-sm text-gray-600">Real-time game scores and results</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Community Competition</h3>
+                    <p class="text-sm text-gray-600">Leaderboards and detailed statistics</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                    <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Safe & Legal</h3>
+                    <p class="text-sm text-gray-600">No real money gambling involved</p>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>Key Features</h3>
-                <ul>
-                    <li><strong>Discord Integration:</strong> Login with your Discord account</li>
-                    <li><strong>Play Money System:</strong> Start with $10,000 virtual currency</li>
-                    <li><strong>Simple Betting:</strong> Pick winners, no complex spreads</li>
-                    <li><strong>Live Updates:</strong> Real-time game scores and results</li>
-                    <li><strong>Community Competition:</strong> Leaderboards and statistics</li>
-                    <li><strong>Safe & Legal:</strong> No real money gambling involved</li>
-                </ul>
+    <!-- Technical Info -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">How We Get Game Data</h2>
             </div>
+            <p class="text-gray-700 leading-relaxed">
+                We use ESPN's publicly available NFL API to ensure accurate and timely information for all games, scores, and results. Bets are automatically settled based on official game outcomes, so you can trust that everything is fair and transparent.
+            </p>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>How We Get Game Data</h3>
-                <p>
-                    We use publicly available NFL game data to ensure accurate and timely information
-                    for all games, scores, and results. Bets are automatically settled based on
-                    official game outcomes.
-                </p>
+        <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Important Disclaimer</h2>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h3>Disclaimer</h3>
-                <p class="mb-0">
-                    <strong>This is NOT real money gambling.</strong> Diet NFL Betting is purely for
-                    entertainment purposes within Discord communities. No real money can be deposited,
-                    wagered, or withdrawn. This platform is designed for fun competition among friends
-                    and community members.
-                </p>
-            </div>
+            <p class="text-gray-700 mb-4 leading-relaxed">
+                <strong class="text-red-600">This is NOT real money gambling.</strong> Diet NFL Betting is purely for entertainment purposes within Discord communities.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                No real money can be deposited, wagered, or withdrawn. This platform is designed for fun competition among friends and community members - think of it as fantasy football's exciting cousin!
+            </p>
         </div>
     </div>
 </div>

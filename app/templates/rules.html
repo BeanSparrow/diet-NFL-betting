@@ -3,65 +3,225 @@
 {% block title %}Rules - Diet NFL Betting{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <h1>Betting Rules</h1>
-        
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>General Rules</h3>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl mb-6">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Betting Rules & Guidelines</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Everything you need to know about fair play, betting limits, and having fun in our Discord community!</p>
+    </div>
+
+    <!-- Rules Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <!-- General Rules -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0 0h2m0 0h2a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v0"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">General Rules</h2>
             </div>
-            <div class="card-body">
-                <ol>
-                    <li>All betting is done with play money only - no real money is involved.</li>
-                    <li>Each user starts with $10,000 in play money per season.</li>
-                    <li>Users must be authenticated via Discord to participate.</li>
-                    <li>One account per person - duplicate accounts will be banned.</li>
-                </ol>
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-green-600">1</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">All betting is done with <strong class="text-blue-600">play money only</strong> - absolutely no real money is involved.</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-green-600">2</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Each user starts with <strong class="text-green-600">$10,000 in virtual currency</strong> at the beginning of each season.</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-green-600">3</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Users must be <strong>authenticated via Discord</strong> to participate in the platform.</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-green-600">4</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed"><strong class="text-red-600">One account per person</strong> - duplicate accounts will be banned to ensure fair play.</p>
+                </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>Betting Rules</h3>
+        <!-- Betting Rules -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0 0h2m0 0h2a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v0"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Betting Guidelines</h2>
             </div>
-            <div class="card-body">
-                <ol>
-                    <li>Minimum bet amount is $1.</li>
-                    <li>Maximum bet amount is your current balance.</li>
-                    <li>Bets must be placed before the game starts.</li>
-                    <li>Once placed, bets cannot be cancelled or modified.</li>
-                    <li>Only one bet per game per user is allowed.</li>
-                </ol>
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-purple-600">1</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Minimum bet amount is <strong class="text-green-600">$1</strong> per wager.</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-purple-600">2</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Maximum bet amount is your <strong class="text-blue-600">current balance</strong> (all-in allowed!).</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-purple-600">3</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Bets must be placed <strong class="text-orange-600">5 minutes before game start</strong> - no late bets!</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-purple-600">4</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Once placed, bets <strong class="text-red-600">cannot be cancelled or modified</strong> - choose wisely!</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                        <span class="text-xs font-bold text-purple-600">5</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed"><strong class="text-indigo-600">One bet per game per user</strong> - make it count!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payouts Section -->
+    <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 mb-8">
+        <div class="flex items-center mb-8">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">Payout Structure</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl p-6 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Winning Bets</h3>
+                <p class="text-3xl font-bold text-green-600 mb-2">2:1</p>
+                <p class="text-sm text-gray-600">Double your money! Bet $100, win $200 total.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Losing Bets</h3>
+                <p class="text-3xl font-bold text-red-600 mb-2">0:1</p>
+                <p class="text-sm text-gray-600">Forfeit the entire wager amount. Better luck next time!</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Tie Games</h3>
+                <p class="text-3xl font-bold text-yellow-600 mb-2">Push</p>
+                <p class="text-sm text-gray-600">Your wager is returned. No win, no loss.</p>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>Payouts</h3>
+        <div class="mt-6 p-4 bg-blue-100 rounded-lg">
+            <p class="text-blue-800 text-center">
+                <strong>💡 Pro Tip:</strong> Payouts are processed automatically after game completion using official NFL results!
+            </p>
+        </div>
+    </div>
+
+    <!-- Fair Play & Community Guidelines -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="flex items-center mb-8">
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
             </div>
-            <div class="card-body">
-                <ol>
-                    <li>Winning bets pay out at 2:1 (double your money).</li>
-                    <li>Losing bets forfeit the entire wager amount.</li>
-                    <li>In case of a tie game, bets are returned (push).</li>
-                    <li>Payouts are processed automatically after game completion.</li>
-                </ol>
-            </div>
+            <h2 class="text-3xl font-bold text-gray-900">Fair Play & Community Guidelines</h2>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h3>Fair Play</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">✅ What We Encourage</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Friendly competition and banter</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Sharing betting strategies and tips</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Reporting bugs and suggesting improvements</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Having fun and enjoying the games!</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <ol>
-                    <li>No exploiting bugs or glitches - report them instead.</li>
-                    <li>No harassment or abuse of other players.</li>
-                    <li>Decisions by administrators are final.</li>
-                    <li>Have fun and bet responsibly!</li>
-                </ol>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">❌ What's Not Allowed</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Exploiting bugs or glitches for unfair advantage</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Harassment or abuse of other players</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Creating multiple accounts</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></div>
+                        <p class="text-gray-700">Spam or disruptive behavior</p>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Final Note -->
+    <div class="mt-8 text-center">
+        <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Remember: This is All About Fun! 🎉</h3>
+            <p class="text-gray-700 mb-4">
+                Diet NFL Betting is designed to bring excitement to your Discord community's game day experience. 
+                Play responsibly, respect your fellow community members, and may the best bettor win!
+            </p>
+            <p class="text-sm text-gray-600">
+                <strong>Admin decisions are final.</strong> Questions about rules or issues? Contact your Discord server administrators.
+            </p>
         </div>
     </div>
 </div>
