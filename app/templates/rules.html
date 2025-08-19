@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Rules - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1>Betting Rules</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>General Rules</h3>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>All betting is done with play money only - no real money is involved.</li>
+                    <li>Each user starts with $10,000 in play money per season.</li>
+                    <li>Users must be authenticated via Discord to participate.</li>
+                    <li>One account per person - duplicate accounts will be banned.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Betting Rules</h3>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Minimum bet amount is $1.</li>
+                    <li>Maximum bet amount is your current balance.</li>
+                    <li>Bets must be placed before the game starts.</li>
+                    <li>Once placed, bets cannot be cancelled or modified.</li>
+                    <li>Only one bet per game per user is allowed.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Payouts</h3>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Winning bets pay out at 2:1 (double your money).</li>
+                    <li>Losing bets forfeit the entire wager amount.</li>
+                    <li>In case of a tie game, bets are returned (push).</li>
+                    <li>Payouts are processed automatically after game completion.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Fair Play</h3>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>No exploiting bugs or glitches - report them instead.</li>
+                    <li>No harassment or abuse of other players.</li>
+                    <li>Decisions by administrators are final.</li>
+                    <li>Have fun and bet responsibly!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

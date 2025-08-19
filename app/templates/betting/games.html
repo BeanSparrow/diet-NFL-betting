@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Available Games - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-football-ball text-blue-600"></i>
+            Available Games
+        </h1>
+        <p class="text-gray-600">Select a game to place your bet. Remember: pick the winning team!</p>
+    </div>
+
+    <!-- Week Filter -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex flex-wrap items-center gap-4">
+            <span class="text-sm font-medium text-gray-700">Filter by week:</span>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ url_for('betting.games') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if not current_week else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Current
+                </a>
+                {% for week in range(1, 19) %}
+                <a href="{{ url_for('betting.games', week=week) }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if current_week == week else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Week {{ week }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Games List -->
+    {% if games %}
+    <div class="space-y-4">
+        {% for game in games %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <!-- Game Header -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="text-sm text-gray-500">
+                        Week {{ game.week }} • {{ game.game_time.strftime('%B %d, %Y at %I:%M %p') }}
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if game.is_bettable %}
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                            <i class="fas fa-clock"></i> Betting Open
+                        </span>
+                        {% else %}
+                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                            <i class="fas fa-lock"></i> Betting Closed
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Teams -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <!-- Away Team -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-gray-900 mb-2">{{ game.away_team }}</div>
+                        {% if game.away_team_abbr %}
+                        <div class="text-gray-500 text-sm mb-3">{{ game.away_team_abbr }}</div>
+                        {% endif %}
+                        {% if game.status == 'final' or game.status == 'in_progress' %}
+                        <div class="text-3xl font-bold text-blue-600">{{ game.away_score }}</div>
+                        {% endif %}
+                        {% if game.total_bets > 0 %}
+                        <div class="mt-2 text-sm text-gray-500">
+                            {{ game.away_bets }} bets ({{ "%.1f"|format(game.away_bet_percentage) }}%)
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- VS / Score -->
+                    <div class="text-center">
+                        {% if game.status == 'scheduled' %}
+                        <div class="text-2xl font-bold text-gray-400">VS</div>
+                        {% elif game.status == 'in_progress' %}
+                        <div class="text-lg font-medium text-orange-600">
+                            {{ game.quarter }} • {{ game.time_remaining or 'In Progress' }}
+                        </div>
+                        {% elif game.status == 'final' %}
+                        <div class="text-lg font-medium text-gray-600">FINAL</div>
+                        {% if game.winner %}
+                        <div class="text-sm text-green-600 font-medium mt-1">
+                            Winner: {{ game.winner }}
+                        </div>
+                        {% elif game.is_tie %}
+                        <div class="text-sm text-yellow-600 font-medium mt-1">TIE</div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Home Team -->
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-gray-900 mb-2">{{ game.home_team }}</div>
+                        {% if game.home_team_abbr %}
+                        <div class="text-gray-500 text-sm mb-3">{{ game.home_team_abbr }}</div>
+                        {% endif %}
+                        {% if game.status == 'final' or game.status == 'in_progress' %}
+                        <div class="text-3xl font-bold text-blue-600">{{ game.home_score }}</div>
+                        {% endif %}
+                        {% if game.total_bets > 0 %}
+                        <div class="mt-2 text-sm text-gray-500">
+                            {{ game.home_bets }} bets ({{ "%.1f"|format(game.home_bet_percentage) }}%)
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 flex justify-center">
+                    {% set user_bet = user_bets.get(game.id) %}
+                    {% if user_bet %}
+                    <!-- User has existing bet -->
+                    <div class="text-center">
+                        <div class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg mb-2">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Bet Placed: ${{ "%.2f"|format(user_bet.wager_amount) }} on {{ user_bet.team_picked }}
+                        </div>
+                        <div>
+                            <a href="{{ url_for('betting.view_bet', bet_id=user_bet.id) }}" 
+                               class="text-sm text-blue-600 hover:text-blue-800 underline">
+                                View Bet Details
+                            </a>
+                        </div>
+                    </div>
+                    {% elif game.is_bettable %}
+                    <!-- Can place bet -->
+                    <a href="{{ url_for('betting.place_bet', game_id=game.id) }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 inline-flex items-center">
+                        <i class="fas fa-dollar-sign mr-2"></i>
+                        Place Bet
+                    </a>
+                    {% else %}
+                    <!-- Betting closed -->
+                    <span class="bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-medium cursor-not-allowed">
+                        <i class="fas fa-lock mr-2"></i>
+                        Betting Closed
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Game Stats (if bets exist) -->
+                {% if game.total_bets > 0 %}
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="text-center text-sm text-gray-600">
+                        <span class="font-medium">{{ game.total_bets }}</span> total bets • 
+                        <span class="font-medium">${{ "%.2f"|format(game.total_wagered) }}</span> wagered
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- No Games Available -->
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <i class="fas fa-calendar-times text-gray-400 text-6xl mb-4"></i>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">No Games Available</h3>
+        <p class="text-gray-600 mb-6">
+            {% if current_week %}
+            No games found for Week {{ current_week }}.
+            {% else %}
+            No upcoming games available for betting at this time.
+            {% endif %}
+        </p>
+        <a href="{{ url_for('betting.games') }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 inline-flex items-center">
+            <i class="fas fa-refresh mr-2"></i>
+            View All Games
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+venv_windows_backup/
+
+# Environment Variables
+.env
+.env.local
+
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
+migration_data.sql
+
+# Logs
+*.log
+logs/
+flask_app.log
+app_launch.log
+
+# Flask Session
+flask_session/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Heroku
+.env.local
+.env.production
+
+# Claude Code specific
+.claude/
+.tasks/
+
+# Backup files
+*.bak
+*.backup
+database_backup_*.db
+
+# Migration and setup scripts (development only)
+clear_data_auto.py
+clear_production_data.py
+migrate_to_postgresql.py
+
+# Temporary files
+*.tmp
+temp/

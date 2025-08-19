@@ -1,0 +1,36 @@
+# Core Flask dependencies
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.7
+Flask-Login==0.6.3
+Flask-Session==0.8.0
+
+# Database (SQLite for development - no psycopg2 needed)
+SQLAlchemy==2.0.31
+
+# Discord OAuth
+Flask-Discord==0.1.64
+requests-oauthlib==2.0.0
+oauthlib==3.2.2
+
+# HTTP requests for ESPN API
+requests==2.32.3
+beautifulsoup4==4.12.3
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Scheduling for automated tasks
+APScheduler==3.10.4
+
+# Development tools
+python-dateutil==2.9.0
+pytz==2024.1
+
+# Testing
+pytest==8.3.3
+pytest-cov==5.0.0
+
+# Security
+werkzeug==3.0.3
+itsdangerous==2.2.0

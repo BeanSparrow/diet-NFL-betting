@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Betting History - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-history text-blue-600"></i>
+            Betting History
+        </h1>
+        <p class="text-gray-600">Track all your past and current bets</p>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex flex-wrap items-center gap-4">
+            <span class="text-sm font-medium text-gray-700">Filter by status:</span>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ url_for('betting.betting_history', status='all') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'all' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    All Bets
+                </a>
+                <a href="{{ url_for('betting.betting_history', status='pending') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'pending' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Pending
+                </a>
+                <a href="{{ url_for('betting.betting_history', status='won') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'won' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Won
+                </a>
+                <a href="{{ url_for('betting.betting_history', status='lost') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'lost' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Lost
+                </a>
+                <a href="{{ url_for('betting.betting_history', status='push') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'push' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Push
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bets List -->
+    {% if bets.items %}
+    <div class="space-y-4">
+        {% for bet in bets.items %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <!-- Bet Header -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center space-x-3">
+                        <!-- Status Icon -->
+                        {% if bet.status == 'won' %}
+                        <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                        {% elif bet.status == 'lost' %}
+                        <div class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-times text-red-600"></i>
+                        </div>
+                        {% elif bet.status == 'push' %}
+                        <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-handshake text-yellow-600"></i>
+                        </div>
+                        {% else %}
+                        <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-blue-600"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Game Info -->
+                        <div>
+                            <div class="font-medium text-gray-900">
+                                {{ bet.game.away_team }} @ {{ bet.game.home_team }}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Week {{ bet.game.week }} • {{ bet.placed_at.strftime('%b %d, %Y') }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bet Amount and Result -->
+                    <div class="text-right">
+                        <div class="font-bold text-lg">
+                            {% if bet.status == 'won' %}
+                            <span class="text-green-600">+${{ "%.2f"|format(bet.actual_payout) }}</span>
+                            {% elif bet.status == 'lost' %}
+                            <span class="text-red-600">-${{ "%.2f"|format(bet.wager_amount) }}</span>
+                            {% elif bet.status == 'push' %}
+                            <span class="text-yellow-600">${{ "%.2f"|format(bet.actual_payout) }}</span>
+                            {% else %}
+                            <span class="text-blue-600">${{ "%.2f"|format(bet.potential_payout) }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            {% if bet.status == 'pending' %}
+                            Potential payout
+                            {% elif bet.status == 'push' %}
+                            Returned
+                            {% else %}
+                            {{ bet.status.title() }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Game Details -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <!-- Teams and Score -->
+                    <div class="md:col-span-2">
+                        <div class="flex justify-center items-center space-x-6">
+                            <div class="text-center">
+                                <div class="font-medium text-gray-900">{{ bet.game.away_team }}</div>
+                                {% if bet.game.status == 'final' or bet.game.status == 'in_progress' %}
+                                <div class="text-2xl font-bold text-blue-600">{{ bet.game.away_score }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="text-center">
+                                {% if bet.game.status == 'scheduled' %}
+                                <div class="text-lg font-bold text-gray-400">VS</div>
+                                {% elif bet.game.status == 'in_progress' %}
+                                <div class="text-sm font-medium text-orange-600">
+                                    {{ bet.game.quarter }}<br>{{ bet.game.time_remaining or 'Live' }}
+                                </div>
+                                {% elif bet.game.status == 'final' %}
+                                <div class="text-sm font-medium text-gray-600">FINAL</div>
+                                {% endif %}
+                            </div>
+                            <div class="text-center">
+                                <div class="font-medium text-gray-900">{{ bet.game.home_team }}</div>
+                                {% if bet.game.status == 'final' or bet.game.status == 'in_progress' %}
+                                <div class="text-2xl font-bold text-blue-600">{{ bet.game.home_score }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Game Result -->
+                        {% if bet.game.status == 'final' %}
+                        <div class="text-center mt-2">
+                            {% if bet.game.winner %}
+                            <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                Winner: {{ bet.game.winner }}
+                            </span>
+                            {% elif bet.game.is_tie %}
+                            <span class="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                                Tie Game
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Bet Details -->
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <div class="text-sm space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Pick:</span>
+                                <span class="font-medium {{ 'text-green-600' if bet.status == 'won' else 'text-red-600' if bet.status == 'lost' else 'text-gray-900' }}">
+                                    {{ bet.team_picked }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Wager:</span>
+                                <span class="font-medium">${{ "%.2f"|format(bet.wager_amount) }}</span>
+                            </div>
+                            {% if bet.status != 'pending' %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Result:</span>
+                                <span class="font-medium">
+                                    {% if bet.status == 'won' %}
+                                    +${{ "%.2f"|format(bet.actual_payout - bet.wager_amount) }}
+                                    {% elif bet.status == 'lost' %}
+                                    -${{ "%.2f"|format(bet.wager_amount) }}
+                                    {% else %}
+                                    $0.00
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex justify-end">
+                    <a href="{{ url_for('betting.view_bet', bet_id=bet.id) }}" 
+                       class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if bets.pages > 1 %}
+    <div class="bg-white rounded-lg shadow-md p-4">
+        <div class="flex justify-center">
+            <nav class="flex items-center space-x-2">
+                {% if bets.has_prev %}
+                <a href="{{ url_for('betting.betting_history', page=bets.prev_num, status=status_filter) }}" 
+                   class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+                
+                {% for page_num in bets.iter_pages() %}
+                {% if page_num %}
+                {% if page_num != bets.page %}
+                <a href="{{ url_for('betting.betting_history', page=page_num, status=status_filter) }}" 
+                   class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <span class="px-3 py-2 bg-blue-600 text-white rounded-md">
+                    {{ page_num }}
+                </span>
+                {% endif %}
+                {% else %}
+                <span class="px-3 py-2 text-gray-400">…</span>
+                {% endif %}
+                {% endfor %}
+                
+                {% if bets.has_next %}
+                <a href="{{ url_for('betting.betting_history', page=bets.next_num, status=status_filter) }}" 
+                   class="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        
+        <div class="text-center mt-4 text-sm text-gray-600">
+            Showing {{ bets.per_page * (bets.page - 1) + 1 }} to 
+            {{ bets.per_page * (bets.page - 1) + bets.items|length }} of 
+            {{ bets.total }} bets
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Bets Message -->
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <i class="fas fa-receipt text-gray-400 text-6xl mb-4"></i>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">
+            {% if status_filter == 'all' %}
+            No Betting History
+            {% else %}
+            No {{ status_filter.title() }} Bets
+            {% endif %}
+        </h3>
+        <p class="text-gray-600 mb-6">
+            {% if status_filter == 'all' %}
+            You haven't placed any bets yet. Start by browsing available games!
+            {% else %}
+            You don't have any {{ status_filter }} bets.
+            {% endif %}
+        </p>
+        <div class="space-x-4">
+            <a href="{{ url_for('betting.games') }}" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 inline-flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Place Your First Bet
+            </a>
+            {% if status_filter != 'all' %}
+            <a href="{{ url_for('betting.betting_history') }}" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 inline-flex items-center">
+                <i class="fas fa-list mr-2"></i>
+                View All Bets
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

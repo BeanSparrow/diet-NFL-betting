@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full text-center">
+        <div class="mb-8">
+            <h1 class="text-9xl font-bold text-gray-300">404</h1>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Page Not Found</h2>
+            <p class="text-gray-600 mb-8">The page you're looking for doesn't exist or has been moved.</p>
+        </div>
+        
+        <div class="space-y-4">
+            <a href="{{ url_for('main.index') }}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                <i class="fas fa-home mr-2"></i>
+                Go Home
+            </a>
+            
+            <div class="text-sm text-gray-500">
+                <p>You can also try:</p>
+                <div class="mt-2 space-x-4">
+                    <a href="{{ url_for('betting.games') }}" class="text-blue-600 hover:text-blue-800">Games</a>
+                    <a href="{{ url_for('stats.leaderboard') }}" class="text-blue-600 hover:text-blue-800">Leaderboard</a>
+                    <a href="{{ url_for('main.dashboard') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

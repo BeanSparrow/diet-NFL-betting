@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome back, {{ user.username }}!</h1>
+    <p class="text-gray-600">Here's your current betting overview</p>
+</div>
+
+<!-- Balance Display Cards - Responsive Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Current Balance Card -->
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Current Balance</h3>
+        <p class="text-3xl font-bold text-blue-600">{{ stats.balance|currency }}</p>
+    </div>
+    
+    <!-- Profit/Loss Card -->
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Profit/Loss</h3>
+        <p class="text-3xl font-bold {{ 'text-green-600' if stats.profit_loss >= 0 else 'text-red-600' }}">
+            {{ stats.profit_loss|currency }}
+        </p>
+    </div>
+    
+    <!-- Win Rate Card -->
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Win Rate</h3>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.win_percentage|percentage }}</p>
+    </div>
+    
+    <!-- Total Bets Card -->
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Total Bets</h3>
+        <p class="text-3xl font-bold text-gray-900">{{ stats.total_bets }}</p>
+    </div>
+</div>
+
+<!-- Pending Bets Section -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">
+        Pending Bets 
+        {% if pending_bets %}
+        <span class="text-sm font-normal text-gray-600">({{ pending_bets|length }} active)</span>
+        {% endif %}
+    </h2>
+    
+    {% if pending_bets %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for bet in pending_bets %}
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition duration-200">
+            <div class="mb-2">
+                <p class="text-sm text-gray-600">{{ bet.game.away_team }} @ {{ bet.game.home_team }}</p>
+                <p class="text-xs text-gray-500">{{ bet.game.game_time.strftime('%m/%d %I:%M %p') }}</p>
+            </div>
+            <div class="border-t pt-2">
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm text-gray-600">Your Pick:</span>
+                    <span class="text-sm font-semibold">{{ bet.team_picked }}</span>
+                </div>
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm text-gray-600">Wager:</span>
+                    <span class="text-sm font-semibold">${{ "%.2f"|format(bet.wager_amount) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-600">Potential Win:</span>
+                    <span class="text-sm font-semibold text-green-600">${{ "%.2f"|format(bet.potential_payout) }}</span>
+                </div>
+            </div>
+            <div class="border-t pt-3 mt-3">
+                <form method="POST" action="{{ url_for('betting.cancel_bet', bet_id=bet.id) }}" 
+                      onsubmit="return confirm('Are you sure you want to cancel this bet? You will receive a full refund of ${{ bet.wager_amount|round(2) }}.')" 
+                      class="inline">
+                    <button type="submit" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-3 rounded transition duration-200">
+                        Cancel Bet
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-600">No pending bets. Place a bet on an upcoming game to get started!</p>
+    {% endif %}
+</div>
+
+<!-- Basic Statistics Summary -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Account Summary</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="flex justify-between py-2">
+            <span class="text-gray-600">Starting Balance:</span>
+            <span class="font-semibold">{{ stats.starting_balance|currency }}</span>
+        </div>
+        <div class="flex justify-between py-2">
+            <span class="text-gray-600">Winning Bets:</span>
+            <span class="font-semibold text-green-600">{{ stats.winning_bets }}</span>
+        </div>
+        <div class="flex justify-between py-2">
+            <span class="text-gray-600">Losing Bets:</span>
+            <span class="font-semibold text-red-600">{{ stats.losing_bets }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="mt-8 flex flex-col sm:flex-row gap-4">
+    <a href="{{ url_for('betting.games') if url_for('betting.games') else '#' }}" 
+       class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+        View Available Games
+    </a>
+    <a href="{{ url_for('betting.betting_history') if url_for('betting.betting_history') else '#' }}" 
+       class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+        View Betting History
+    </a>
+    <a href="{{ url_for('stats.leaderboard') if url_for('stats.leaderboard') else '#' }}" 
+       class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+        View Leaderboard
+    </a>
+</div>
+{% endblock %}

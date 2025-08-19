@@ -1,0 +1,215 @@
+/* Custom styles for Diet NFL Betting */
+
+:root {
+    --primary-color: #0066cc;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-text {
+    color: #ffc107 !important;
+    font-weight: 500;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Balance Display */
+.balance-positive {
+    color: var(--success-color);
+}
+
+.balance-negative {
+    color: var(--danger-color);
+}
+
+/* Game Cards */
+.game-card {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.game-card:hover {
+    background-color: var(--light-color);
+}
+
+.game-card.selected {
+    border-color: var(--primary-color);
+    background-color: #e7f3ff;
+}
+
+/* Bet Status Badges */
+.badge-won {
+    background-color: var(--success-color);
+}
+
+.badge-lost {
+    background-color: var(--danger-color);
+}
+
+.badge-pending {
+    background-color: var(--warning-color);
+}
+
+.badge-push {
+    background-color: var(--secondary-color);
+}
+
+/* Team Logos Placeholder */
+.team-logo {
+    width: 40px;
+    height: 40px;
+    background-color: var(--light-color);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Leaderboard */
+.leaderboard-table tr:first-child {
+    background-color: #ffd700;
+}
+
+.leaderboard-table tr:nth-child(2) {
+    background-color: #c0c0c0;
+}
+
+.leaderboard-table tr:nth-child(3) {
+    background-color: #cd7f32;
+}
+
+/* Betting Interface */
+.bet-amount-input {
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.team-select-card {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.team-select-card:hover {
+    border-color: var(--primary-color);
+}
+
+.team-select-card.selected {
+    border-color: var(--primary-color);
+    background-color: #e7f3ff;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Responsive Tables */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .table-responsive th,
+    .table-responsive td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Loading Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+/* Alert Modifications */
+.alert {
+    border-radius: 10px;
+}
+
+/* User Avatar */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Game Time Display */
+.game-time {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Quick Bet Buttons */
+.quick-bet-btn {
+    margin: 2px;
+}
+
+/* Stats Cards */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

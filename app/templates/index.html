@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-12">
+    <h1 class="text-5xl font-bold text-gray-900 mb-4">
+        <i class="fas fa-football-ball text-blue-600"></i>
+        Diet NFL Betting
+    </h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        Join your Discord community in friendly NFL betting with play money.
+        No real money involved - just fun competition!
+    </p>
+    
+    {% if not current_user %}
+    <div class="mb-8">
+        <a href="{{ url_for('auth.login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-200">
+            <i class="fab fa-discord"></i> Login with Discord
+        </a>
+        {% if config.DEBUG and config.DEVELOPMENT_AUTH_BYPASS %}
+        <div class="mt-4">
+            <a href="{{ url_for('auth.dev_login') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm transition duration-200">
+                <i class="fas fa-code"></i> Development Login (Local Testing)
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Features Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <i class="fas fa-coins text-yellow-500 text-5xl mb-4"></i>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Play Money Only</h3>
+        <p class="text-gray-600">Start with $10,000 in play money. No real money involved - just bragging rights!</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <i class="fas fa-trophy text-green-500 text-5xl mb-4"></i>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Compete & Win</h3>
+        <p class="text-gray-600">Pick winners for NFL games. Double your money on correct picks!</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <i class="fab fa-discord text-blue-600 text-5xl mb-4"></i>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Discord Integration</h3>
+        <p class="text-gray-600">Login with your Discord account and compete with your server community.</p>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">How It Works</h2>
+    <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow-md p-6 flex items-start">
+            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 mt-1">1</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-1">Sign In</h3>
+                <p class="text-gray-600">Login using your Discord account - no separate registration needed!</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 flex items-start">
+            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 mt-1">2</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-1">Get Your Bankroll</h3>
+                <p class="text-gray-600">Start with $10,000 in play money for the season.</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 flex items-start">
+            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 mt-1">3</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-1">Place Your Bets</h3>
+                <p class="text-gray-600">Pick winners for upcoming NFL games and choose your wager amount.</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 flex items-start">
+            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 mt-1">4</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-1">Win Big</h3>
+                <p class="text-gray-600">Correct picks pay out 2:1 - double your money!</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 flex items-start">
+            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 mt-1">5</div>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-1">Climb the Leaderboard</h3>
+                <p class="text-gray-600">Compete with your Discord community for the top spot.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

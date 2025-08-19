@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full text-center">
+        <div class="mb-8">
+            <h1 class="text-9xl font-bold text-red-300">500</h1>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Server Error</h2>
+            <p class="text-gray-600 mb-8">Something went wrong on our end. Our team has been notified and is working on a fix.</p>
+        </div>
+        
+        <div class="space-y-4">
+            <a href="{{ url_for('main.index') }}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                <i class="fas fa-home mr-2"></i>
+                Go Home
+            </a>
+            
+            <button onclick="window.location.reload()" 
+                    class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                <i class="fas fa-redo mr-2"></i>
+                Try Again
+            </button>
+            
+            <div class="text-sm text-gray-500">
+                <p>If this problem persists, you can:</p>
+                <div class="mt-2 space-x-4">
+                    <a href="{{ url_for('main.contact') }}" class="text-blue-600 hover:text-blue-800">Contact Support</a>
+                    <a href="{{ url_for('main.dashboard') }}" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
