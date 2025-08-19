@@ -63,11 +63,18 @@ class BetValidator:
             self.errors.append("Game not found")
             return False
         
-        cutoff_time = game.game_time - timedelta(minutes=5)
+        # Handle both naive and aware datetimes
+        if game.game_time.tzinfo is None:
+            # If game_time is naive, assume it's UTC
+            game_time_utc = game.game_time.replace(tzinfo=timezone.utc)
+        else:
+            game_time_utc = game.game_time
+            
+        cutoff_time = game_time_utc - timedelta(minutes=5)
         now = datetime.now(timezone.utc)
         
         # Check if game has already started
-        if game.game_time <= now:
+        if game_time_utc <= now:
             self.errors.append("Cannot bet on games that have already started")
             return False
         
