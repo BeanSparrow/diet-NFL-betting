@@ -22,9 +22,7 @@ class Config:
     DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
     DISCORD_SCOPES = ['identify', 'email']  # Required Discord OAuth scopes
     
-    # Session - use null to disable Flask-Session and use built-in Flask sessions
-    SESSION_TYPE = 'null'
-    SESSION_PERMANENT = True
+    # Session configuration for Flask's built-in sessions
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'false').lower() == 'true'
     SESSION_COOKIE_HTTPONLY = os.environ.get('SESSION_COOKIE_HTTPONLY', 'true').lower() == 'true'

@@ -2,13 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_discord import DiscordOAuth2Session
-from flask_session import Session
 import os
 
 db = SQLAlchemy()
 migrate = Migrate()
 discord = DiscordOAuth2Session()
-session = Session()
 
 def create_app(config_name=None):
     """Application factory pattern"""
@@ -31,7 +29,6 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     discord.init_app(app)
-    session.init_app(app)
     
     # Register blueprints
     from app.routes import main_bp, auth_bp, betting_bp, stats_bp, api_bp
