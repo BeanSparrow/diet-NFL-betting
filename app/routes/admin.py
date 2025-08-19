@@ -137,6 +137,50 @@ def bets():
     
     return render_template('admin/bets.html', bets=bets, status_filter=status_filter)
 
+@admin_bp.route('/admin/bets/<int:bet_id>/cancel', methods=['POST'])
+@admin_required
+def cancel_bet(bet_id):
+    """Admin function to cancel any pending bet"""
+    try:
+        # Get the bet
+        bet = Bet.query.get_or_404(bet_id)
+        
+        # Check if bet can be cancelled
+        if bet.status != 'pending':
+            flash(f'Cannot cancel bet: Status is {bet.status}. Only pending bets can be cancelled.', 'danger')
+            return jsonify({
+                'success': False,
+                'message': f'Cannot cancel bet: Status is {bet.status}'
+            }), 400
+        
+        # Admin can cancel any pending bet regardless of timing restrictions
+        # Update bet status
+        bet.status = 'cancelled'
+        bet.settled_at = datetime.now(timezone.utc)
+        
+        # Refund the wager amount to the user
+        bet.user.balance += bet.wager_amount
+        
+        # Commit the transaction
+        db.session.commit()
+        
+        flash(f'Successfully cancelled bet for {bet.user.username}. Refunded ${bet.wager_amount:.2f}.', 'success')
+        return jsonify({
+            'success': True,
+            'message': f'Bet cancelled successfully. ${bet.wager_amount:.2f} refunded to {bet.user.username}.',
+            'refund_amount': bet.wager_amount,
+            'username': bet.user.username
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        error_msg = f'Error cancelling bet: {str(e)}'
+        flash(error_msg, 'danger')
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
+
 @admin_bp.route('/admin/games')
 @admin_required
 def games():
