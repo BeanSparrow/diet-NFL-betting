@@ -23,7 +23,6 @@ class Config:
     DISCORD_SCOPES = ['identify', 'email']  # Required Discord OAuth scopes
     
     # Session
-    SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'false').lower() == 'true'
@@ -96,7 +95,7 @@ class ProductionConfig(Config):
     # Production security settings
     SESSION_COOKIE_SECURE = True  # Force HTTPS cookies
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Strict'  # Stricter in production
+    SESSION_COOKIE_SAMESITE = 'Lax'  # Use Lax for OAuth callbacks
     
     # Override host for production
     HOST = os.environ.get('HOST', '0.0.0.0')
