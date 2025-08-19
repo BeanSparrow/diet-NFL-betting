@@ -159,7 +159,12 @@ class Game(db.Model):
     @property
     def is_bettable(self):
         """Check if game is still open for betting (closes 5 minutes before game start)"""
-        cutoff_time = self.game_time - timedelta(minutes=5)
+        # Handle both naive and aware datetimes
+        if self.game_time.tzinfo is None:
+            # If game_time is naive, assume it's UTC
+            cutoff_time = self.game_time.replace(tzinfo=timezone.utc) - timedelta(minutes=5)
+        else:
+            cutoff_time = self.game_time - timedelta(minutes=5)
         return self.status == 'scheduled' and datetime.now(timezone.utc) < cutoff_time
     
     @property

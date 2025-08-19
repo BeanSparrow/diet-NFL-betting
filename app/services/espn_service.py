@@ -381,6 +381,87 @@ class ESPNService:
                 'created': 0,
                 'updated': 0
             }
+    
+    def fetch_full_season_schedule(self, year: int = None, weeks: List[int] = None) -> Dict[str, Any]:
+        """
+        Fetch entire season schedule (all weeks) and update database
+        This is a manual admin function, not used by automatic scheduler
+        
+        Args:
+            year: NFL season year (defaults to current year)
+            weeks: List of week numbers to fetch (defaults to 1-18 for regular season)
+            
+        Returns:
+            Dict containing operation results
+        """
+        import time
+        
+        if year is None:
+            year = datetime.now().year
+            
+        if weeks is None:
+            # Regular season weeks 1-18
+            weeks = list(range(1, 19))
+            
+        try:
+            logger.info(f"Fetching full season schedule for {year}, weeks {weeks[0]}-{weeks[-1]}")
+            
+            all_games_data = []
+            created_total = 0
+            updated_total = 0
+            errors = []
+            
+            for week in weeks:
+                try:
+                    logger.info(f"Fetching week {week} of {year} season")
+                    espn_data = self.get_games_by_week(year, week)
+                    
+                    games_data = self.parse_game_data(espn_data)
+                    logger.info(f"Parsed {len(games_data)} games for week {week}")
+                    
+                    # Add week and season info to each game
+                    for game in games_data:
+                        game['week'] = week
+                        game['season'] = year
+                        game['season_type'] = 'regular'
+                    
+                    all_games_data.extend(games_data)
+                    
+                    # Update database for this week
+                    update_results = self.update_games_in_database(games_data)
+                    created_total += update_results['created']
+                    updated_total += update_results['updated']
+                    
+                    # Brief delay between API calls to be respectful
+                    time.sleep(0.5)
+                    
+                except Exception as e:
+                    logger.error(f"Error fetching week {week}: {e}")
+                    errors.append(f"Week {week}: {str(e)}")
+                    continue
+            
+            logger.info(f"Full season fetch complete: {len(all_games_data)} total games")
+            
+            return {
+                'success': len(errors) == 0,
+                'partial_success': len(errors) > 0 and len(all_games_data) > 0,
+                'games_processed': len(all_games_data),
+                'created': created_total,
+                'updated': updated_total,
+                'weeks_fetched': len(weeks) - len(errors),
+                'weeks_requested': len(weeks),
+                'errors': errors if errors else None
+            }
+            
+        except Exception as e:
+            logger.error(f"Full season fetch failed: {e}")
+            return {
+                'success': False,
+                'error': str(e),
+                'games_processed': 0,
+                'created': 0,
+                'updated': 0
+            }
 
 
 # Convenience function for scheduled updates

@@ -70,6 +70,48 @@
             </div>
         </div>
 
+        <!-- ESPN Data Fetch Section -->
+        <div class="bg-white rounded-xl shadow-md mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">ESPN Data Management</h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <button onclick="fetchCurrentWeek()" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                            <svg class="inline w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Fetch Current Week
+                        </button>
+                        <p class="text-sm text-gray-600 mt-2">Updates games for the current week only (same as automatic scheduler)</p>
+                    </div>
+                    <div>
+                        <button onclick="fetchFullSeason()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                            <svg class="inline w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Fetch Full Season Schedule
+                        </button>
+                        <p class="text-sm text-gray-600 mt-2">Fetches all weeks 1-18 for the current season (may take a minute)</p>
+                    </div>
+                </div>
+                <div id="fetchStatus" class="mt-4 hidden">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span id="fetchStatusText" class="text-blue-900">Fetching data from ESPN...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <a href="{{ url_for('admin.users') }}" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-200">
@@ -171,4 +213,93 @@
         </div>
     </div>
 </div>
+
+<script>
+function showFetchStatus(message) {
+    const statusDiv = document.getElementById('fetchStatus');
+    const statusText = document.getElementById('fetchStatusText');
+    statusDiv.classList.remove('hidden');
+    statusText.textContent = message;
+}
+
+function hideFetchStatus() {
+    document.getElementById('fetchStatus').classList.add('hidden');
+}
+
+function fetchCurrentWeek() {
+    if (!confirm('Fetch current week games from ESPN API?')) {
+        return;
+    }
+    
+    showFetchStatus('Fetching current week data from ESPN...');
+    
+    fetch('/admin/fetch_current_week', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideFetchStatus();
+        if (data.success) {
+            alert(`Success! Fetched ${data.details.games_processed} games\n` +
+                  `Created: ${data.details.created}\n` +
+                  `Updated: ${data.details.updated}`);
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        hideFetchStatus();
+        alert(`Error: ${error.message}`);
+    });
+}
+
+function fetchFullSeason() {
+    const year = new Date().getFullYear();
+    if (!confirm(`Fetch full ${year} season schedule (weeks 1-18) from ESPN API?\n\nThis may take up to a minute.`)) {
+        return;
+    }
+    
+    showFetchStatus('Fetching full season schedule from ESPN (this may take a minute)...');
+    
+    fetch('/admin/fetch_season_schedule', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            year: year,
+            weeks: null  // null = all weeks 1-18
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideFetchStatus();
+        if (data.success) {
+            alert(`Success! Fetched ${data.details.games_processed} games\n` +
+                  `Created: ${data.details.created}\n` +
+                  `Updated: ${data.details.updated}\n` +
+                  `Weeks: ${data.details.weeks_fetched}/${data.details.weeks_requested}`);
+            location.reload();
+        } else if (data.partial) {
+            const errors = data.errors ? '\n\nErrors:\n' + data.errors.join('\n') : '';
+            alert(`Partial Success: Fetched ${data.details.games_processed} games\n` +
+                  `Created: ${data.details.created}\n` +
+                  `Updated: ${data.details.updated}\n` +
+                  `Weeks: ${data.details.weeks_fetched}/${data.details.weeks_requested}` +
+                  errors);
+            location.reload();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        hideFetchStatus();
+        alert(`Error: ${error.message}`);
+    });
+}
+</script>
 {% endblock %}

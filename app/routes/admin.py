@@ -5,6 +5,7 @@ from functools import wraps
 from app.models import User, Game, Bet, get_current_user
 from app import db
 from app.routes import admin_bp
+from app.services.espn_service import ESPNService
 from datetime import datetime, timezone
 from sqlalchemy import func, desc
 
@@ -142,17 +143,39 @@ def games():
     """View and manage games"""
     page = request.args.get('page', 1, type=int)
     status_filter = request.args.get('status', '')
+    week_filter = request.args.get('week', '', type=str)
+    season_filter = request.args.get('season', '', type=str)
     
     query = Game.query
     
     if status_filter:
         query = query.filter(Game.status == status_filter)
     
-    games = query.order_by(desc(Game.game_time)).paginate(
+    if week_filter:
+        query = query.filter(Game.week == int(week_filter))
+    
+    if season_filter:
+        query = query.filter(Game.season == int(season_filter))
+    
+    # Order by week and game_time for better organization
+    games = query.order_by(Game.week.asc(), Game.game_time.asc()).paginate(
         page=page, per_page=20, error_out=False
     )
     
-    return render_template('admin/games.html', games=games, status_filter=status_filter)
+    # Get available weeks and seasons for filters
+    available_weeks = db.session.query(Game.week).distinct().order_by(Game.week).all()
+    available_weeks = [w[0] for w in available_weeks if w[0] is not None]
+    
+    available_seasons = db.session.query(Game.season).distinct().order_by(Game.season.desc()).all()
+    available_seasons = [s[0] for s in available_seasons if s[0] is not None]
+    
+    return render_template('admin/games.html', 
+                         games=games, 
+                         status_filter=status_filter,
+                         week_filter=week_filter,
+                         season_filter=season_filter,
+                         available_weeks=available_weeks,
+                         available_seasons=available_seasons)
 
 @admin_bp.route('/admin/games/<int:game_id>')
 @admin_required
@@ -177,3 +200,87 @@ def game_detail(game_id):
     }
     
     return render_template('admin/game_detail.html', game=game, bets=game_bets, betting_stats=betting_stats)
+
+@admin_bp.route('/admin/fetch_season_schedule', methods=['POST'])
+@admin_required
+def fetch_season_schedule():
+    """Manually fetch full season schedule from ESPN API"""
+    try:
+        # Get parameters from request
+        year = request.json.get('year', datetime.now().year)
+        weeks = request.json.get('weeks')  # Optional: specific weeks to fetch
+        
+        # Create ESPN service instance
+        espn_service = ESPNService()
+        
+        # Fetch the full season schedule
+        result = espn_service.fetch_full_season_schedule(year=year, weeks=weeks)
+        
+        if result['success']:
+            flash(f'Successfully fetched season schedule: {result["games_processed"]} games '
+                  f'({result["created"]} new, {result["updated"]} updated)', 'success')
+            return jsonify({
+                'success': True,
+                'message': f'Fetched {result["games_processed"]} games',
+                'details': result
+            })
+        elif result.get('partial_success'):
+            flash(f'Partially fetched season schedule: {result["games_processed"]} games '
+                  f'({result["weeks_fetched"]}/{result["weeks_requested"]} weeks successful)', 'warning')
+            return jsonify({
+                'success': False,
+                'partial': True,
+                'message': f'Partial fetch: {result["games_processed"]} games',
+                'details': result,
+                'errors': result.get('errors', [])
+            })
+        else:
+            flash(f'Failed to fetch season schedule: {result.get("error", "Unknown error")}', 'danger')
+            return jsonify({
+                'success': False,
+                'message': f'Failed: {result.get("error", "Unknown error")}',
+                'details': result
+            }), 500
+            
+    except Exception as e:
+        error_msg = f'Error fetching season schedule: {str(e)}'
+        flash(error_msg, 'danger')
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
+
+@admin_bp.route('/admin/fetch_current_week', methods=['POST'])
+@admin_required
+def fetch_current_week():
+    """Manually fetch current week's games from ESPN API"""
+    try:
+        # Create ESPN service instance
+        espn_service = ESPNService()
+        
+        # Fetch current week (same as scheduler does)
+        result = espn_service.fetch_and_update_current_week()
+        
+        if result['success']:
+            flash(f'Successfully fetched current week: {result["games_processed"]} games '
+                  f'({result["created"]} new, {result["updated"]} updated)', 'success')
+            return jsonify({
+                'success': True,
+                'message': f'Fetched {result["games_processed"]} games',
+                'details': result
+            })
+        else:
+            flash(f'Failed to fetch current week: {result.get("error", "Unknown error")}', 'danger')
+            return jsonify({
+                'success': False,
+                'message': f'Failed: {result.get("error", "Unknown error")}',
+                'details': result
+            }), 500
+            
+    except Exception as e:
+        error_msg = f'Error fetching current week: {str(e)}'
+        flash(error_msg, 'danger')
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
