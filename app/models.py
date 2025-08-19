@@ -30,6 +30,9 @@ class User(db.Model):
     biggest_win: Mapped[float] = mapped_column(Float, default=0.0)
     biggest_loss: Mapped[float] = mapped_column(Float, default=0.0)
     
+    # Admin status
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))

@@ -51,7 +51,7 @@ def main():
         if tables_exist and not has_migration_history:
             # Tables exist but no migration history - stamp as current
             print("Tables exist but no migration history. Stamping current migration...")
-            stamp(revision='001')
+            stamp(revision='002')  # Updated to latest migration
             print("Migration stamped successfully!")
         elif not tables_exist:
             # No tables - run normal upgrade

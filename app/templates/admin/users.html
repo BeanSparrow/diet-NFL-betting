@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
+                <p class="text-gray-600 mt-2">View and manage all users</p>
+            </div>
+            <a href="{{ url_for('admin.dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                Back to Admin Dashboard
+            </a>
+        </div>
+
+        <!-- Search -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <form method="GET" class="flex gap-4">
+                <div class="flex-1">
+                    <input type="text" name="search" value="{{ search }}" 
+                           placeholder="Search by username, Discord ID, or email"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
+                    Search
+                </button>
+                {% if search %}
+                <a href="{{ url_for('admin.users') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
+                    Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bets</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Win Rate</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for user in users.items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <img src="{{ user.avatar_url or 'https://cdn.discordapp.com/embed/avatars/0.png' }}" 
+                                         alt="{{ user.username }}" class="w-10 h-10 rounded-full">
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
+                                        <div class="text-sm text-gray-500">{{ user.discord_id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${{ "%.2f"|format(user.balance) }}</div>
+                                <div class="text-sm text-gray-500">
+                                    {% set profit = user.balance - user.starting_balance %}
+                                    {% if profit > 0 %}
+                                        <span class="text-green-600">+${{ "%.2f"|format(profit) }}</span>
+                                    {% elif profit < 0 %}
+                                        <span class="text-red-600">-${{ "%.2f"|format(profit|abs) }}</span>
+                                    {% else %}
+                                        <span class="text-gray-500">$0.00</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ user.total_bets }}</div>
+                                <div class="text-sm text-gray-500">{{ user.winning_bets }}W {{ user.losing_bets }}L</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if user.total_bets > 0 %}
+                                    {% set win_rate = (user.winning_bets / user.total_bets * 100) %}
+                                    <span class="text-sm {% if win_rate >= 50 %}text-green-600{% else %}text-red-600{% endif %}">
+                                        {{ "%.1f"|format(win_rate) }}%
+                                    </span>
+                                {% else %}
+                                    <span class="text-sm text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if user.is_admin %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {% if user.is_admin %}Admin{% else %}User{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ user.created_at.strftime('%m/%d/%Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" 
+                                   class="text-blue-600 hover:text-blue-900 mr-4">View</a>
+                                <button onclick="toggleAdmin({{ user.id }}, '{{ user.username }}')" 
+                                        class="text-red-600 hover:text-red-900">
+                                    {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if users.pages > 1 %}
+            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    {% if users.has_prev %}
+                    <a href="{{ url_for('admin.users', page=users.prev_num, search=search) }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                    {% endif %}
+                    {% if users.has_next %}
+                    <a href="{{ url_for('admin.users', page=users.next_num, search=search) }}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing {{ users.per_page * (users.page - 1) + 1 }} to {{ users.per_page * users.page if users.per_page * users.page < users.total else users.total }} of {{ users.total }} results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                            {% for page_num in users.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != users.page %}
+                                    <a href="{{ url_for('admin.users', page=page_num, search=search) }}" 
+                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">{{ page_num }}</a>
+                                    {% else %}
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">{{ page_num }}</span>
+                                    {% endif %}
+                                {% else %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">…</span>
+                                {% endif %}
+                            {% endfor %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleAdmin(userId, username) {
+    if (confirm(`Are you sure you want to toggle admin status for ${username}?`)) {
+        fetch(`/admin/users/${userId}/toggle_admin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'An error occurred');
+            }
+        })
+        .catch(error => {
+            alert('An error occurred');
+            console.error(error);
+        });
+    }
+}
+</script>
+{% endblock %}

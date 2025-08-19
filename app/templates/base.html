@@ -60,6 +60,13 @@
                         <!-- Dropdown menu would go here - simplified for now -->
                     </div>
                     
+                    <!-- Admin Link (only for admins) -->
+                    {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="text-red-300 hover:text-red-100 px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        <i class="fas fa-cogs"></i> Admin
+                    </a>
+                    {% endif %}
+                    
                     <!-- Logout Link -->
                     <a href="{{ url_for('auth.logout') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-200">
                         <i class="fas fa-sign-out-alt"></i> Logout

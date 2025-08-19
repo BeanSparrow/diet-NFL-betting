@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }} - User Details{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">User Details</h1>
+                <p class="text-gray-600 mt-2">{{ user.username }} ({{ user.discord_id }})</p>
+            </div>
+            <a href="{{ url_for('admin.users') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                Back to Users
+            </a>
+        </div>
+
+        <!-- User Info Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center">
+                    <img src="{{ user.avatar_url or 'https://cdn.discordapp.com/embed/avatars/0.png' }}" 
+                         alt="{{ user.username }}" class="w-16 h-16 rounded-full">
+                    <div class="ml-6">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ user.display_name or user.username }}</h2>
+                        <p class="text-gray-600">@{{ user.username }}</p>
+                        {% if user.email %}
+                        <p class="text-gray-600">{{ user.email }}</p>
+                        {% endif %}
+                        <div class="mt-2">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if user.is_admin %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {% if user.is_admin %}Administrator{% else %}User{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Joined</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-green-600">${{ "%.2f"|format(user.balance) }}</p>
+                    <p class="text-sm font-medium text-gray-600">Current Balance</p>
+                    {% set profit = user.balance - user.starting_balance %}
+                    {% if profit > 0 %}
+                        <p class="text-xs text-green-600">+${{ "%.2f"|format(profit) }} profit</p>
+                    {% elif profit < 0 %}
+                        <p class="text-xs text-red-600">-${{ "%.2f"|format(profit|abs) }} loss</p>
+                    {% else %}
+                        <p class="text-xs text-gray-500">No profit/loss</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-blue-600">{{ user.total_bets }}</p>
+                    <p class="text-sm font-medium text-gray-600">Total Bets</p>
+                    <p class="text-xs text-gray-500">${{ "%.2f"|format(user_stats.total_wagered) }} wagered</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-purple-600">{{ "%.1f"|format(user_stats.win_rate) }}%</p>
+                    <p class="text-sm font-medium text-gray-600">Win Rate</p>
+                    <p class="text-xs text-gray-500">{{ user.winning_bets }}W {{ user.losing_bets }}L</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-yellow-600">${{ "%.2f"|format(user.biggest_win) }}</p>
+                    <p class="text-sm font-medium text-gray-600">Biggest Win</p>
+                    <p class="text-xs text-gray-500">Biggest Loss: ${{ "%.2f"|format(user.biggest_loss) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Bets -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Recent Bets</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Game</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team Picked</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wager</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placed</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for bet in bets %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ bet.game.away_team }} @ {{ bet.game.home_team }}</div>
+                                <div class="text-sm text-gray-500">{{ bet.game.game_time.strftime('%m/%d/%Y %I:%M %p') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-medium text-gray-900">{{ bet.team_picked }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-gray-900">${{ "%.2f"|format(bet.wager_amount) }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if bet.status == 'pending' %}bg-yellow-100 text-yellow-800{% endif %}
+                                    {% if bet.status == 'won' %}bg-green-100 text-green-800{% endif %}
+                                    {% if bet.status == 'lost' %}bg-red-100 text-red-800{% endif %}">
+                                    {{ bet.status.title() }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ bet.placed_at.strftime('%m/%d/%Y %I:%M %p') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -31,12 +31,13 @@ def create_app(config_name=None):
     discord.init_app(app)
     
     # Register blueprints
-    from app.routes import main_bp, auth_bp, betting_bp, stats_bp, api_bp
+    from app.routes import main_bp, auth_bp, betting_bp, stats_bp, api_bp, admin_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(betting_bp, url_prefix='/betting')
     app.register_blueprint(stats_bp, url_prefix='/stats')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(admin_bp)
     
     # Register development routes if in debug mode
     if app.config['DEBUG']:

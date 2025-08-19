@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p class="text-gray-600 mt-2">Manage users, bets, and games</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Users</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ stats.total_users }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Bets</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ stats.total_bets }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Games</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ stats.total_games }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Wagered</p>
+                        <p class="text-2xl font-bold text-gray-900">${{ "%.2f"|format(stats.total_wagered) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <a href="{{ url_for('admin.users') }}" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-200">
+                <div class="text-center">
+                    <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                    <p class="font-semibold text-gray-900">Manage Users</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin.bets') }}" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-200">
+                <div class="text-center">
+                    <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    <p class="font-semibold text-gray-900">View Bets</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin.games') }}" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-200">
+                <div class="text-center">
+                    <svg class="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <p class="font-semibold text-gray-900">Manage Games</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('main.dashboard') }}" class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition duration-200">
+                <div class="text-center">
+                    <svg class="w-8 h-8 text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <p class="font-semibold text-gray-900">Back to App</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Users -->
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Users</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        {% for user in stats.recent_users %}
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="{{ user.avatar_url or 'https://cdn.discordapp.com/embed/avatars/0.png' }}" 
+                                     alt="{{ user.username }}" class="w-8 h-8 rounded-full">
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900">{{ user.username }}</p>
+                                    <p class="text-xs text-gray-500">{{ user.created_at.strftime('%m/%d/%Y') }}</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-green-600">${{ "%.0f"|format(user.balance) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('admin.users') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View all users →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bets -->
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Bets</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        {% for bet in stats.recent_bets %}
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ bet.user.username }}</p>
+                                <p class="text-xs text-gray-500">{{ bet.team_picked }} - {{ bet.game.home_team }} vs {{ bet.game.away_team }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-900">${{ "%.2f"|format(bet.wager_amount) }}</p>
+                                <span class="text-xs px-2 py-1 rounded-full 
+                                    {% if bet.status == 'pending' %}bg-yellow-100 text-yellow-800{% endif %}
+                                    {% if bet.status == 'won' %}bg-green-100 text-green-800{% endif %}
+                                    {% if bet.status == 'lost' %}bg-red-100 text-red-800{% endif %}">
+                                    {{ bet.status.title() }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('admin.bets') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View all bets →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
