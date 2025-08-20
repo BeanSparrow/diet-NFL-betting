@@ -38,6 +38,10 @@
                    class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'push' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
                     Push
                 </a>
+                <a href="{{ url_for('betting.betting_history', status='cancelled') }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ 'bg-blue-600 text-white' if status_filter == 'cancelled' else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} transition duration-200">
+                    Cancelled
+                </a>
             </div>
         </div>
     </div>
@@ -63,6 +67,10 @@
                         {% elif bet.status == 'push' %}
                         <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                             <i class="fas fa-handshake text-yellow-600"></i>
+                        </div>
+                        {% elif bet.status == 'cancelled' %}
+                        <div class="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-ban text-gray-600"></i>
                         </div>
                         {% else %}
                         <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -90,6 +98,8 @@
                             <span class="text-red-600">-${{ "%.2f"|format(bet.wager_amount) }}</span>
                             {% elif bet.status == 'push' %}
                             <span class="text-yellow-600">${{ "%.2f"|format(bet.actual_payout) }}</span>
+                            {% elif bet.status == 'cancelled' %}
+                            <span class="text-gray-600">${{ "%.2f"|format(bet.wager_amount) }}</span>
                             {% else %}
                             <span class="text-blue-600">${{ "%.2f"|format(bet.potential_payout) }}</span>
                             {% endif %}
@@ -99,6 +109,8 @@
                             Potential payout
                             {% elif bet.status == 'push' %}
                             Returned
+                            {% elif bet.status == 'cancelled' %}
+                            Refunded
                             {% else %}
                             {{ bet.status.title() }}
                             {% endif %}
@@ -173,6 +185,8 @@
                                     +${{ "%.2f"|format(bet.actual_payout - bet.wager_amount) }}
                                     {% elif bet.status == 'lost' %}
                                     -${{ "%.2f"|format(bet.wager_amount) }}
+                                    {% elif bet.status == 'cancelled' %}
+                                    <span class="text-gray-600">Refunded</span>
                                     {% else %}
                                     $0.00
                                     {% endif %}

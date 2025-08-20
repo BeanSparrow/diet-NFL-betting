@@ -147,6 +147,8 @@ class Game(db.Model):
     total_wagered: Mapped[float] = mapped_column(Float, default=0.0)
     home_bets: Mapped[int] = mapped_column(Integer, default=0)
     away_bets: Mapped[int] = mapped_column(Integer, default=0)
+    home_wagered: Mapped[float] = mapped_column(Float, default=0.0)
+    away_wagered: Mapped[float] = mapped_column(Float, default=0.0)
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
@@ -181,6 +183,26 @@ class Game(db.Model):
             return 0.0
         return (self.away_bets / self.total_bets) * 100
     
+    def calculate_team_wagered_amounts(self):
+        """Calculate home_wagered and away_wagered from actual bets"""
+        from sqlalchemy import func
+        
+        # Calculate home wagered amount
+        home_wagered = db.session.query(func.sum(Bet.wager_amount)).filter(
+            Bet.game_id == self.id,
+            Bet.team_picked == self.home_team,
+            Bet.status.in_(['pending', 'won', 'lost', 'push'])
+        ).scalar() or 0.0
+        
+        # Calculate away wagered amount  
+        away_wagered = db.session.query(func.sum(Bet.wager_amount)).filter(
+            Bet.game_id == self.id,
+            Bet.team_picked == self.away_team,
+            Bet.status.in_(['pending', 'won', 'lost', 'push'])
+        ).scalar() or 0.0
+        
+        return home_wagered, away_wagered
+    
     def __repr__(self):
         return f'<Game {self.away_team} @ {self.home_team} - Week {self.week}>'
 
@@ -213,10 +235,9 @@ class Bet(db.Model):
     user: Mapped['User'] = relationship('User', back_populates='bets')
     game: Mapped['Game'] = relationship('Game', back_populates='bets')
     
-    # Unique constraint to prevent duplicate bets
-    __table_args__ = (
-        db.UniqueConstraint('user_id', 'game_id', name='unique_user_game_bet'),
-    )
+    # Note: Removed unique constraint to allow users to place new bets 
+    # on games where they previously cancelled bets. Duplicate validation 
+    # is now handled at the application level to only prevent pending duplicates.
     
     def calculate_payout(self, multiplier=2.0):
         """Calculate potential payout based on wager"""

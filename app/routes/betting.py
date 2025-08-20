@@ -35,7 +35,8 @@ def games():
                 bets = Bet.query.filter(
                     and_(
                         Bet.user_id == current_user.id,
-                        Bet.game_id.in_(game_ids)
+                        Bet.game_id.in_(game_ids),
+                        Bet.status == 'pending'  # Only show pending bets
                     )
                 ).all()
                 user_bets = {bet.game_id: bet for bet in bets}
@@ -65,11 +66,12 @@ def place_bet(game_id):
         flash('This game is no longer available for betting.', 'warning')
         return redirect(url_for('betting.games'))
     
-    # Check if user already has a bet on this game
+    # Check if user already has a pending bet on this game
     current_user = get_current_user()
     existing_bet = Bet.query.filter_by(
         user_id=current_user.id,
-        game_id=game_id
+        game_id=game_id,
+        status='pending'  # Only check for pending bets
     ).first()
     
     if existing_bet:
@@ -98,7 +100,7 @@ def place_bet(game_id):
                 current_user,
                 game_id,
                 form_data['team_picked'],
-                form_data['wager_amount']
+                float(form_data['wager_amount'])
             )
             
             if bet:
@@ -107,6 +109,8 @@ def place_bet(game_id):
             else:
                 # Flash validator errors
                 validator.flash_errors()
+    
+    # The home_wagered and away_wagered fields are now maintained automatically
     
     return render_template('betting/place_bet.html', game=game)
 
@@ -174,7 +178,10 @@ def betting_history():
     
     query = Bet.query.filter_by(user_id=current_user.id)
     
-    if status_filter != 'all':
+    if status_filter == 'all':
+        # Exclude cancelled bets from "all" view by default
+        query = query.filter(Bet.status != 'cancelled')
+    else:
         query = query.filter_by(status=status_filter)
     
     bets = query.order_by(Bet.placed_at.desc()).paginate(

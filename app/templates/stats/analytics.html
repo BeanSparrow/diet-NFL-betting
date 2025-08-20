@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - Diet NFL Betting{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">📊 Analytics Dashboard</h1>
+            <p class="text-gray-600">Deep dive into betting patterns, trends, and community insights</p>
+        </div>
+
+        <!-- Community Insights Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Active Users -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Active Users</p>
+                        <p class="text-3xl font-bold text-blue-600">{{ community_insights.total_active_users or 0 }}</p>
+                    </div>
+                    <div class="bg-blue-100 rounded-full p-3">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Bet On -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Games with Bets</p>
+                        <p class="text-3xl font-bold text-green-600">{{ community_insights.total_games_bet_on or 0 }}</p>
+                    </div>
+                    <div class="bg-green-100 rounded-full p-3">
+                        <i class="fas fa-football-ball text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Money in Play -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Money in Play</p>
+                        <p class="text-3xl font-bold text-purple-600">${{ "%.0f"|format(community_insights.total_money_in_play or 0) }}</p>
+                    </div>
+                    <div class="bg-purple-100 rounded-full p-3">
+                        <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Bet Size -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Avg Bet Size</p>
+                        <p class="text-3xl font-bold text-orange-600">${{ "%.0f"|format(community_insights.average_bet_size_this_week or 0) }}</p>
+                    </div>
+                    <div class="bg-orange-100 rounded-full p-3">
+                        <i class="fas fa-chart-bar text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Weekly Activity Chart -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Weekly Betting Activity</h3>
+                <div class="h-80">
+                    <canvas id="weeklyActivityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- User Balance Trend -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Your Balance Trend</h3>
+                <div class="h-80">
+                    <canvas id="balanceTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Distributions -->
+        <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Game Betting Distributions</h3>
+            <div class="overflow-x-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for game in game_distributions[:9] %}
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                        <div class="text-center mb-3">
+                            <div class="font-semibold text-gray-900">{{ game.away_team_abbr }} @ {{ game.home_team_abbr }}</div>
+                            <div class="text-sm text-gray-600">Week {{ game.week }}</div>
+                            {% if game.status == 'final' and game.winner %}
+                            <div class="text-sm font-medium text-green-600 mt-1">Winner: {{ game.winner }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Mini donut chart container -->
+                        <div class="flex justify-center mb-3">
+                            <div class="relative w-24 h-24">
+                                <canvas class="mini-chart" data-away-bets="{{ game.away_bets }}" data-home-bets="{{ game.home_bets }}" data-away-team="{{ game.away_team_abbr }}" data-home-team="{{ game.home_team_abbr }}"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-sm text-gray-600">{{ game.total_bets }} bets</div>
+                            <div class="text-sm font-medium text-green-600">${{ "%.0f"|format(game.total_wagered) }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Most Popular Team -->
+            {% if community_insights.most_popular_team %}
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h4 class="text-lg font-bold text-gray-900 mb-4">🏆 Most Popular Team</h4>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ community_insights.most_popular_team.team }}</div>
+                    <div class="text-sm text-gray-600">{{ community_insights.most_popular_team.bet_count }} bets</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Highest Scoring Week -->
+            {% if community_insights.highest_scoring_week %}
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h4 class="text-lg font-bold text-gray-900 mb-4">🔥 Hottest Week</h4>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">Week {{ community_insights.highest_scoring_week.week }}</div>
+                    <div class="text-sm text-gray-600">{{ community_insights.highest_scoring_week.total_bets }} total bets</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Biggest Upset -->
+            {% if community_insights.biggest_upset %}
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h4 class="text-lg font-bold text-gray-900 mb-4">😱 Biggest Upset</h4>
+                <div class="text-center">
+                    <div class="text-sm font-bold text-red-600">{{ community_insights.biggest_upset.winner }}</div>
+                    <div class="text-xs text-gray-600">Week {{ community_insights.biggest_upset.week }}</div>
+                    <div class="text-xs text-gray-500">{{ community_insights.biggest_upset.winner_bets }}:{{ community_insights.biggest_upset.loser_bets }} bet ratio</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Weekly Activity Chart
+    const weeklyCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+    const weeklyData = {{ week_stats | tojson }};
+    
+    new Chart(weeklyCtx, {
+        type: 'bar',
+        data: {
+            labels: weeklyData.map(w => `Week ${w.week}`),
+            datasets: [{
+                label: 'Total Bets',
+                data: weeklyData.map(w => w.total_bets),
+                backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                yAxisID: 'y'
+            }, {
+                label: 'Total Wagered ($)',
+                data: weeklyData.map(w => w.total_wagered),
+                type: 'line',
+                borderColor: 'rgba(34, 197, 94, 1)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Betting Trends'
+                }
+            }
+        }
+    });
+
+    // User Balance Trend Chart
+    const balanceCtx = document.getElementById('balanceTrendChart').getContext('2d');
+    const balanceData = {{ user_performance | tojson }};
+    
+    if (balanceData.length > 0) {
+        new Chart(balanceCtx, {
+            type: 'line',
+            data: {
+                labels: balanceData.map(d => new Date(d.date).toLocaleDateString()),
+                datasets: [{
+                    label: 'Balance',
+                    data: balanceData.map(d => d.balance),
+                    borderColor: 'rgba(147, 51, 234, 1)',
+                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Your Balance Over Time'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    } else {
+        balanceCtx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500"><p>No betting history yet - place some bets to see your trend!</p></div>';
+    }
+
+    // Mini charts for game distributions
+    document.querySelectorAll('.mini-chart').forEach(canvas => {
+        const awayBets = parseInt(canvas.dataset.awayBets);
+        const homeBets = parseInt(canvas.dataset.homeBets);
+        const awayTeam = canvas.dataset.awayTeam;
+        const homeTeam = canvas.dataset.homeTeam;
+        
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [awayTeam, homeTeam],
+                datasets: [{
+                    data: [awayBets, homeBets],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(59, 130, 246, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed}`;
+                            }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

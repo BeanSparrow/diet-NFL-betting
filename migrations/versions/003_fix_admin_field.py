@@ -17,29 +17,27 @@ depends_on = None
 
 
 def upgrade():
-    # Check if column exists first (PostgreSQL compatible)
+    # Check if column exists first (SQLite compatible)
     conn = op.get_bind()
-    result = conn.execute(text("""
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name='users' AND column_name='is_admin'
-    """))
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('users')]
     
     # Only add column if it doesn't exist
-    if result.rowcount == 0:
-        op.add_column('users', sa.Column('is_admin', sa.Boolean(), nullable=False, server_default='false'))
-        # Remove the server default after adding
-        op.alter_column('users', 'is_admin', server_default=None)
+    if 'is_admin' not in columns:
+        # Add column with default value
+        with op.batch_alter_table('users', schema=None) as batch_op:
+            batch_op.add_column(sa.Column('is_admin', sa.Boolean(), nullable=False, server_default='0'))
+        
+        # Update all existing records to have is_admin = false (0)
+        conn.execute(text('UPDATE users SET is_admin = 0 WHERE is_admin IS NULL'))
 
 
 def downgrade():
-    # Check if column exists before trying to drop
+    # Check if column exists before trying to drop (SQLite compatible)
     conn = op.get_bind()
-    result = conn.execute(text("""
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name='users' AND column_name='is_admin'
-    """))
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('users')]
     
-    if result.rowcount > 0:
-        op.drop_column('users', 'is_admin')
+    if 'is_admin' in columns:
+        with op.batch_alter_table('users', schema=None) as batch_op:
+            batch_op.drop_column('is_admin')

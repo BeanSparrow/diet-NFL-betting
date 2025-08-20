@@ -16,7 +16,7 @@
     <!-- Bet Status Card -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <!-- Status Header -->
-        <div class="px-6 py-4 {{ 'bg-green-100 border-b border-green-200' if bet.status == 'won' else 'bg-red-100 border-b border-red-200' if bet.status == 'lost' else 'bg-yellow-100 border-b border-yellow-200' if bet.status == 'push' else 'bg-blue-100 border-b border-blue-200' }}">
+        <div class="px-6 py-4 {{ 'bg-green-100 border-b border-green-200' if bet.status == 'won' else 'bg-red-100 border-b border-red-200' if bet.status == 'lost' else 'bg-yellow-100 border-b border-yellow-200' if bet.status == 'push' else 'bg-gray-100 border-b border-gray-200' if bet.status == 'cancelled' else 'bg-blue-100 border-b border-blue-200' }}">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     {% if bet.status == 'won' %}
@@ -28,6 +28,9 @@
                     {% elif bet.status == 'push' %}
                     <i class="fas fa-handshake text-yellow-600 text-xl mr-3"></i>
                     <span class="text-yellow-800 font-semibold text-lg">Push (Tie)</span>
+                    {% elif bet.status == 'cancelled' %}
+                    <i class="fas fa-ban text-gray-600 text-xl mr-3"></i>
+                    <span class="text-gray-800 font-semibold text-lg">Bet Cancelled</span>
                     {% else %}
                     <i class="fas fa-clock text-blue-600 text-xl mr-3"></i>
                     <span class="text-blue-800 font-semibold text-lg">Pending</span>
@@ -41,6 +44,9 @@
                     {% elif bet.status == 'push' %}
                     <div class="text-yellow-800 font-bold text-xl">${{ "%.2f"|format(bet.actual_payout) }}</div>
                     <div class="text-sm text-yellow-700">Wager Returned</div>
+                    {% elif bet.status == 'cancelled' %}
+                    <div class="text-gray-800 font-bold text-xl">${{ "%.2f"|format(bet.wager_amount) }}</div>
+                    <div class="text-sm text-gray-700">Refunded</div>
                     {% else %}
                     <div class="text-blue-800 font-bold text-xl">${{ "%.2f"|format(bet.potential_payout) }}</div>
                     <div class="text-sm text-blue-700">Potential Payout</div>
@@ -122,7 +128,7 @@
                     <div class="bg-gray-50 rounded-lg p-4">
                         <div class="text-sm text-gray-600 mb-1">Team Picked</div>
                         <div class="text-lg font-bold text-gray-900">{{ bet.team_picked }}</div>
-                        {% if bet.status != 'pending' %}
+                        {% if bet.status in ['won', 'lost', 'push'] %}
                         <div class="mt-2">
                             {% if bet.team_picked == bet.game.winner %}
                             <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
@@ -164,7 +170,7 @@
                             <span class="text-gray-600">Potential Payout:</span>
                             <span class="font-medium">${{ "%.2f"|format(bet.potential_payout) }}</span>
                         </div>
-                        {% if bet.status != 'pending' %}
+                        {% if bet.status in ['won', 'lost', 'push'] %}
                         <div class="flex justify-between text-sm border-t pt-3">
                             <span class="text-gray-900 font-medium">Actual Payout:</span>
                             <span class="font-bold {{ 'text-green-600' if bet.actual_payout > bet.wager_amount else 'text-red-600' if bet.actual_payout == 0 else 'text-yellow-600' }}">
@@ -183,6 +189,11 @@
                                 {% endif %}
                             </span>
                         </div>
+                        {% elif bet.status == 'cancelled' %}
+                        <div class="flex justify-between text-sm border-t pt-3">
+                            <span class="text-gray-900 font-medium">Status:</span>
+                            <span class="font-bold text-gray-600">Cancelled - Refunded</span>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -198,7 +209,7 @@
                     </div>
                     {% if bet.settled_at %}
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Bet Settled:</span>
+                        <span class="text-gray-600">{% if bet.status == 'cancelled' %}Bet Cancelled:{% else %}Bet Settled:{% endif %}</span>
                         <span class="font-medium">{{ bet.settled_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
                     </div>
                     {% endif %}

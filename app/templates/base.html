@@ -44,6 +44,11 @@
                         <i class="fas fa-trophy"></i> Leaderboard
                     </a>
                     
+                    <!-- Analytics Link -->
+                    <a href="{{ url_for('stats.analytics') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-200">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                    
                     <!-- Balance Display -->
                     <span class="text-gray-300 px-3 py-2 text-sm">
                         <i class="fas fa-wallet"></i> {{ current_user.balance|currency }}

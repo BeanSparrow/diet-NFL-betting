@@ -31,20 +31,21 @@ def dashboard():
     """Admin dashboard with overview statistics"""
     # Get basic stats
     total_users = User.query.count()
-    total_bets = Bet.query.count()
+    # Exclude cancelled bets from total count
+    total_bets = Bet.query.filter(Bet.status != 'cancelled').count()
     total_games = Game.query.count()
     
     # Recent users (last 10)
     recent_users = User.query.order_by(desc(User.created_at)).limit(10).all()
     
-    # Recent bets (last 10)
-    recent_bets = db.session.query(Bet).join(User).join(Game).order_by(desc(Bet.placed_at)).limit(10).all()
+    # Recent bets (last 10) - exclude cancelled bets
+    recent_bets = db.session.query(Bet).join(User).join(Game).filter(Bet.status != 'cancelled').order_by(desc(Bet.placed_at)).limit(10).all()
     
     # Active games
     active_games = Game.query.filter(Game.status.in_(['scheduled', 'in_progress'])).limit(5).all()
     
-    # Calculate total money wagered
-    total_wagered = db.session.query(func.sum(Bet.wager_amount)).scalar() or 0
+    # Calculate total money wagered - exclude cancelled bets
+    total_wagered = db.session.query(func.sum(Bet.wager_amount)).filter(Bet.status != 'cancelled').scalar() or 0
     
     stats = {
         'total_users': total_users,
@@ -161,6 +162,17 @@ def cancel_bet(bet_id):
         # Refund the wager amount to the user
         bet.user.balance += bet.wager_amount
         
+        # Update game statistics (reverse the bet placement)
+        game = bet.game
+        game.total_bets -= 1
+        game.total_wagered -= bet.wager_amount
+        if bet.team_picked == game.home_team:
+            game.home_bets -= 1
+            game.home_wagered -= bet.wager_amount
+        else:
+            game.away_bets -= 1
+            game.away_wagered -= bet.wager_amount
+        
         # Commit the transaction
         db.session.commit()
         
@@ -174,11 +186,18 @@ def cancel_bet(bet_id):
         
     except Exception as e:
         db.session.rollback()
+        # Add detailed error logging
+        import traceback
+        full_error = traceback.format_exc()
+        print(f"DETAILED CANCELLATION ERROR: {full_error}")
+        
         error_msg = f'Error cancelling bet: {str(e)}'
         flash(error_msg, 'danger')
         return jsonify({
             'success': False,
-            'message': error_msg
+            'message': error_msg,
+            'detailed_error': str(e),  # Include detailed error in response
+            'error_type': type(e).__name__
         }), 500
 
 @admin_bp.route('/admin/games')
