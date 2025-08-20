@@ -198,25 +198,52 @@ def calculate_current_streak(user_id):
 @login_required
 def analytics():
     """Display comprehensive analytics dashboard"""
-    current_user = get_current_user()
-    
-    # Get week-based statistics
-    week_stats = get_weekly_stats()
-    
-    # Get user's performance over time
-    user_performance = get_user_performance_data(current_user.id) if current_user else []
-    
-    # Get game-by-game betting distribution
-    game_distributions = get_recent_game_distributions()
-    
-    # Get overall community insights
-    community_insights = get_community_insights()
-    
-    return render_template('stats/analytics.html',
-                         week_stats=week_stats,
-                         user_performance=user_performance,
-                         game_distributions=game_distributions,
-                         community_insights=community_insights)
+    try:
+        current_user = get_current_user()
+        
+        # Get week-based statistics
+        week_stats = get_weekly_stats()
+        
+        # Get user's performance over time
+        user_performance = get_user_performance_data(current_user.id) if current_user else []
+        
+        # Get game-by-game betting distribution
+        game_distributions = get_recent_game_distributions()
+        
+        # Get overall community insights (with error handling for PostgreSQL)
+        try:
+            community_insights = get_community_insights()
+        except Exception as e:
+            print(f"Community insights error: {e}")
+            # Fallback to basic insights without accolades
+            community_insights = {
+                'total_active_users': 0,
+                'total_games_bet_on': 0,
+                'average_bets_per_user': 0,
+                'most_popular_team': None,
+                'biggest_upset': None,
+                'total_money_in_play': 0,
+                'biggest_potential_payout': 0,
+                'average_bet_size_this_week': 0,
+                'accolades': {}
+            }
+        
+        return render_template('stats/analytics.html',
+                             week_stats=week_stats,
+                             user_performance=user_performance,
+                             game_distributions=game_distributions,
+                             community_insights=community_insights)
+                             
+    except Exception as e:
+        print(f"Analytics route error: {e}")
+        import traceback
+        print(traceback.format_exc())
+        # Return minimal analytics page
+        return render_template('stats/analytics.html',
+                             week_stats=[],
+                             user_performance=[],
+                             game_distributions=[],
+                             community_insights={'accolades': {}})
 
 @stats_bp.route('/api/weekly-stats')
 def api_weekly_stats():
