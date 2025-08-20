@@ -115,7 +115,7 @@ def get_community_stats():
     stats = {
         'total_users': User.query.count(),
         'total_bets': db.session.query(func.sum(User.total_bets)).scalar() or 0,
-        'total_wagered': db.session.query(func.sum(Bet.wager_amount)).scalar() or 0,
+        'total_wagered': db.session.query(func.sum(Bet.wager_amount)).filter(Bet.status != 'cancelled').scalar() or 0,
         'total_games': Game.query.filter_by(status='final').count(),
         'active_bets': Bet.query.filter_by(status='pending').count(),
         'average_balance': db.session.query(func.avg(User.balance)).scalar() or 0,

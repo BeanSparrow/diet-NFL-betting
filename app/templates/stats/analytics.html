@@ -11,6 +11,53 @@
             <p class="text-gray-600">Deep dive into betting patterns, trends, and community insights</p>
         </div>
 
+        <!-- Analytics Selection System -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-4">
+                    <span class="text-sm font-medium text-gray-700">View:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setView('global')" 
+                               class="view-btn px-4 py-2 rounded-lg text-sm font-medium transition duration-200 bg-blue-600 text-white" 
+                               data-view="global">
+                            <i class="fas fa-globe mr-2"></i>Global
+                        </button>
+                        <button onclick="setView('accolades')" 
+                               class="view-btn px-4 py-2 rounded-lg text-sm font-medium transition duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300" 
+                               data-view="accolades">
+                            <i class="fas fa-trophy mr-2"></i>Community Accolades
+                        </button>
+                        <button onclick="setView('weekly')" 
+                               class="view-btn px-4 py-2 rounded-lg text-sm font-medium transition duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300" 
+                               data-view="weekly">
+                            <i class="fas fa-calendar-week mr-2"></i>Weekly
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Week Selection (hidden by default) -->
+                <div id="weekSelection" class="hidden flex flex-wrap items-center gap-4">
+                    <span class="text-sm font-medium text-gray-700">Week:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setWeek('current')" 
+                               class="week-btn px-3 py-1 rounded-full text-sm transition duration-200 bg-blue-600 text-white" 
+                               data-week="current">
+                            Current
+                        </button>
+                        {% for week in range(1, 19) %}
+                        <button onclick="setWeek({{ week }})" 
+                               class="week-btn px-3 py-1 rounded-full text-sm transition duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300" 
+                               data-week="{{ week }}">
+                            Week {{ week }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global View Content -->
+        <div id="globalView">
         <!-- Community Insights Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Active Users -->
@@ -68,11 +115,24 @@
 
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Weekly Activity Chart -->
+            <!-- Weekly Activity Charts -->
             <div class="bg-white rounded-xl p-6 shadow-lg">
                 <h3 class="text-xl font-bold text-gray-900 mb-6">Weekly Betting Activity</h3>
-                <div class="h-80">
-                    <canvas id="weeklyActivityChart"></canvas>
+                
+                <!-- Bet Count Chart -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-3">Number of Bets</h4>
+                    <div class="h-48">
+                        <canvas id="weeklyBetsChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Wagered Amount Chart -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-3">Total Wagered</h4>
+                    <div class="h-48">
+                        <canvas id="weeklyWageredChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -85,40 +145,9 @@
             </div>
         </div>
 
-        <!-- Game Distributions -->
-        <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
-            <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Game Betting Distributions</h3>
-            <div class="overflow-x-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for game in game_distributions[:9] %}
-                    <div class="border rounded-lg p-4 bg-gray-50">
-                        <div class="text-center mb-3">
-                            <div class="font-semibold text-gray-900">{{ game.away_team_abbr }} @ {{ game.home_team_abbr }}</div>
-                            <div class="text-sm text-gray-600">Week {{ game.week }}</div>
-                            {% if game.status == 'final' and game.winner %}
-                            <div class="text-sm font-medium text-green-600 mt-1">Winner: {{ game.winner }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Mini donut chart container -->
-                        <div class="flex justify-center mb-3">
-                            <div class="relative w-24 h-24">
-                                <canvas class="mini-chart" data-away-bets="{{ game.away_bets }}" data-home-bets="{{ game.home_bets }}" data-away-team="{{ game.away_team_abbr }}" data-home-team="{{ game.home_team_abbr }}"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="text-sm text-gray-600">{{ game.total_bets }} bets</div>
-                            <div class="text-sm font-medium text-green-600">${{ "%.0f"|format(game.total_wagered) }}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
 
         <!-- Community Insights -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Most Popular Team -->
             {% if community_insights.most_popular_team %}
             <div class="bg-white rounded-xl p-6 shadow-lg">
@@ -130,16 +159,6 @@
             </div>
             {% endif %}
 
-            <!-- Highest Scoring Week -->
-            {% if community_insights.highest_scoring_week %}
-            <div class="bg-white rounded-xl p-6 shadow-lg">
-                <h4 class="text-lg font-bold text-gray-900 mb-4">🔥 Hottest Week</h4>
-                <div class="text-center">
-                    <div class="text-2xl font-bold text-green-600">Week {{ community_insights.highest_scoring_week.week }}</div>
-                    <div class="text-sm text-gray-600">{{ community_insights.highest_scoring_week.total_bets }} total bets</div>
-                </div>
-            </div>
-            {% endif %}
 
             <!-- Biggest Upset -->
             {% if community_insights.biggest_upset %}
@@ -153,35 +172,389 @@
             </div>
             {% endif %}
         </div>
+
+        </div> <!-- End Global View -->
+
+        <!-- Community Accolades View Content -->
+        <div id="accoladesView" class="hidden">
+        {% if community_insights.accolades %}
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">🏅 Community Accolades</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                
+                <!-- Money-Based Accolades -->
+                {% if community_insights.accolades.high_roller %}
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-4 border border-yellow-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">💰</span>
+                        <h5 class="font-bold text-gray-900">High Roller</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.high_roller.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.high_roller.value }} wagered</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.penny_pincher %}
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🪙</span>
+                        <h5 class="font-bold text-gray-900">Penny Pincher</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.penny_pincher.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.penny_pincher.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.all_in_andy %}
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 border border-red-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🎰</span>
+                        <h5 class="font-bold text-gray-900">All-In Andy</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.all_in_andy.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.all_in_andy.value }} single bet</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.money_bags %}
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">💼</span>
+                        <h5 class="font-bold text-gray-900">Money Bags</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.money_bags.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.money_bags.value }} balance</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.broke_as_joke %}
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">💸</span>
+                        <h5 class="font-bold text-gray-900">Broke as a Joke</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.broke_as_joke.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.broke_as_joke.value }} balance</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.minimalist %}
+                <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg p-4 border border-teal-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🤏</span>
+                        <h5 class="font-bold text-gray-900">Minimalist</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.minimalist.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.minimalist.value }} under $10</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.feast_or_famine %}
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">📈</span>
+                        <h5 class="font-bold text-gray-900">Feast or Famine</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.feast_or_famine.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.feast_or_famine.value }}</div>
+                </div>
+                {% endif %}
+
+                <!-- Performance Accolades -->
+                {% if community_insights.accolades.rabbits_foot %}
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg p-4 border border-emerald-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🍀</span>
+                        <h5 class="font-bold text-gray-900">Rabbit's Foot</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.rabbits_foot.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.rabbits_foot.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.cursed %}
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">👻</span>
+                        <h5 class="font-bold text-gray-900">Cursed</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.cursed.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.cursed.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.indecisive %}
+                <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg p-4 border border-pink-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🤔</span>
+                        <h5 class="font-bold text-gray-900">Indecisive</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.indecisive.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.indecisive.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.crystal_ball %}
+                <div class="bg-gradient-to-br from-violet-50 to-violet-100 rounded-lg p-4 border border-violet-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🔮</span>
+                        <h5 class="font-bold text-gray-900">Crystal Ball</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.crystal_ball.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.crystal_ball.value }} win rate</div>
+                </div>
+                {% endif %}
+
+                <!-- Betting Pattern Accolades -->
+                {% if community_insights.accolades.hometown_hero %}
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🏠</span>
+                        <h5 class="font-bold text-gray-900">Hometown Hero</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.hometown_hero.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.hometown_hero.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.road_warrior %}
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🛣️</span>
+                        <h5 class="font-bold text-gray-900">Road Warrior</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.road_warrior.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.road_warrior.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.one_trick_pony %}
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🐴</span>
+                        <h5 class="font-bold text-gray-900">One-Trick Pony</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.one_trick_pony.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.one_trick_pony.value }}</div>
+                </div>
+                {% endif %}
+
+                {% if community_insights.accolades.early_bird %}
+                <div class="bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg p-4 border border-sky-200">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-2">🐦</span>
+                        <h5 class="font-bold text-gray-900">Early Bird</h5>
+                    </div>
+                    <div class="text-sm font-medium text-blue-600">{{ community_insights.accolades.early_bird.username }}</div>
+                    <div class="text-xs text-gray-600">{{ community_insights.accolades.early_bird.value }}</div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endif %}
+        </div> <!-- End Accolades View -->
+
+        <!-- Weekly View Content -->
+        <div id="weeklyView" class="hidden">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-6" id="weeklyTitle">Weekly Game Analysis</h3>
+                <div id="weeklyContent">
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-4"></i>
+                        <p>Loading weekly data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+// Analytics View Management (global scope)
+let currentView = 'global';
+let currentWeek = 'current';
+
+function setView(view) {
+    currentView = view;
+    
+    // Update view buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        if (btn.dataset.view === view) {
+            btn.className = 'view-btn px-4 py-2 rounded-lg text-sm font-medium transition duration-200 bg-blue-600 text-white';
+        } else {
+            btn.className = 'view-btn px-4 py-2 rounded-lg text-sm font-medium transition duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300';
+        }
+    });
+    
+    // Hide all views first
+    document.getElementById('globalView').style.display = 'none';
+    document.getElementById('accoladesView').style.display = 'none';
+    document.getElementById('weeklyView').style.display = 'none';
+    document.getElementById('weekSelection').classList.add('hidden');
+    
+    // Show selected view
+    if (view === 'global') {
+        document.getElementById('globalView').style.display = 'block';
+    } else if (view === 'accolades') {
+        document.getElementById('accoladesView').style.display = 'block';
+    } else if (view === 'weekly') {
+        document.getElementById('weeklyView').style.display = 'block';
+        document.getElementById('weekSelection').classList.remove('hidden');
+        loadWeeklyData(currentWeek);
+    }
+}
+
+function setWeek(week) {
+    currentWeek = week;
+    
+    // Update week buttons
+    document.querySelectorAll('.week-btn').forEach(btn => {
+        if (btn.dataset.week == week) {
+            btn.className = 'week-btn px-3 py-1 rounded-full text-sm transition duration-200 bg-blue-600 text-white';
+        } else {
+            btn.className = 'week-btn px-3 py-1 rounded-full text-sm transition duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300';
+        }
+    });
+    
+    loadWeeklyData(week);
+}
+
+function loadWeeklyData(week) {
+    const weeklyContent = document.getElementById('weeklyContent');
+    const weeklyTitle = document.getElementById('weeklyTitle');
+    
+    // Update title
+    weeklyTitle.textContent = week === 'current' ? 'Current Week Game Analysis' : `Week ${week} Game Analysis`;
+    
+    // Show loading
+    weeklyContent.innerHTML = `
+        <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-spinner fa-spin text-2xl mb-4"></i>
+            <p>Loading ${week === 'current' ? 'current week' : 'Week ' + week} data...</p>
+        </div>
+    `;
+    
+    // Fetch weekly data
+    const url = week === 'current' 
+        ? '/stats/api/weekly-games'
+        : `/stats/api/weekly-games?week=${week}`;
+        
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displayWeeklyGames(data);
+        })
+        .catch(error => {
+            console.error('Error loading weekly data:', error);
+            weeklyContent.innerHTML = `
+                <div class="text-center py-8 text-red-500">
+                    <i class="fas fa-exclamation-triangle text-2xl mb-4"></i>
+                    <p>Error loading weekly data. Please try again.</p>
+                </div>
+            `;
+        });
+}
+
+function displayWeeklyGames(games) {
+    const weeklyContent = document.getElementById('weeklyContent');
+    
+    if (!games || games.length === 0) {
+        weeklyContent.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-calendar-times text-2xl mb-4"></i>
+                <p>No games found for this week.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
+    
+    games.forEach(game => {
+        const awayBetPct = game.total_bets > 0 ? (game.away_bets / game.total_bets * 100) : 0;
+        const homeBetPct = game.total_bets > 0 ? (game.home_bets / game.total_bets * 100) : 0;
+        const awayMoneyPct = game.total_wagered > 0 ? (game.away_wagered / game.total_wagered * 100) : 0;
+        const homeMoneyPct = game.total_wagered > 0 ? (game.home_wagered / game.total_wagered * 100) : 0;
+        
+        html += `
+            <div class="bg-gray-50 rounded-lg p-4 border">
+                <div class="text-center mb-4">
+                    <div class="font-bold text-lg text-gray-900">${game.away_team_abbr || game.away_team} @ ${game.home_team_abbr || game.home_team}</div>
+                    <div class="text-sm text-gray-600">${new Date(game.game_time).toLocaleDateString()} • ${new Date(game.game_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    ${game.status === 'final' && game.winner ? `<div class="text-sm font-medium text-green-600 mt-1">Winner: ${game.winner}</div>` : ''}
+                </div>
+                
+                ${game.total_bets > 0 ? `
+                    <!-- Bet Distribution -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-medium text-gray-600">Bet Distribution</span>
+                            <span class="text-xs text-gray-500">${game.total_bets} bets</span>
+                        </div>
+                        <div class="relative">
+                            <div class="flex h-6 bg-gray-200 rounded overflow-hidden">
+                                ${awayBetPct > 0 ? `<div class="bg-red-400 transition-all duration-500" style="width: ${awayBetPct}%"></div>` : ''}
+                                ${homeBetPct > 0 ? `<div class="bg-blue-400 transition-all duration-500" style="width: ${homeBetPct}%"></div>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1">
+                            <span class="text-red-600">${game.away_bets} (${awayBetPct.toFixed(0)}%)</span>
+                            <span class="text-blue-600">${game.home_bets} (${homeBetPct.toFixed(0)}%)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Money Distribution -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-medium text-gray-600">Money Distribution</span>
+                            <span class="text-xs text-gray-500">$${game.total_wagered.toFixed(0)}</span>
+                        </div>
+                        <div class="relative">
+                            <div class="flex h-6 bg-gray-200 rounded overflow-hidden">
+                                ${awayMoneyPct > 0 ? `<div class="bg-red-300 transition-all duration-500" style="width: ${awayMoneyPct}%"></div>` : ''}
+                                ${homeMoneyPct > 0 ? `<div class="bg-blue-300 transition-all duration-500" style="width: ${homeMoneyPct}%"></div>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1">
+                            <span class="text-red-600">$${(game.away_wagered || 0).toFixed(0)} (${awayMoneyPct.toFixed(0)}%)</span>
+                            <span class="text-blue-600">$${(game.home_wagered || 0).toFixed(0)} (${homeMoneyPct.toFixed(0)}%)</span>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="text-center py-4 text-gray-500">
+                        <i class="fas fa-chart-bar text-lg mb-2"></i>
+                        <div class="text-sm">No bets placed yet</div>
+                    </div>
+                `}
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    weeklyContent.innerHTML = html;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Weekly Activity Chart
-    const weeklyCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+    // Weekly Activity Charts
     const weeklyData = {{ week_stats | tojson }};
     
-    new Chart(weeklyCtx, {
+    // Weekly Bets Chart
+    const weeklyBetsCtx = document.getElementById('weeklyBetsChart').getContext('2d');
+    new Chart(weeklyBetsCtx, {
         type: 'bar',
         data: {
             labels: weeklyData.map(w => `Week ${w.week}`),
             datasets: [{
                 label: 'Total Bets',
                 data: weeklyData.map(w => w.total_bets),
-                backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
                 borderColor: 'rgba(59, 130, 246, 1)',
-                borderWidth: 1,
-                yAxisID: 'y'
-            }, {
-                label: 'Total Wagered ($)',
-                data: weeklyData.map(w => w.total_wagered),
-                type: 'line',
-                borderColor: 'rgba(34, 197, 94, 1)',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                yAxisID: 'y1'
+                borderWidth: 2,
+                borderRadius: 4
             }]
         },
         options: {
@@ -189,23 +562,81 @@ document.addEventListener('DOMContentLoaded', function() {
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: function(context) {
+                            const max = context.chart.scales.y.max;
+                            if (max <= 5) return 5;
+                            if (max <= 10) return 5;
+                            if (max <= 25) return 5;
+                            if (max <= 50) return 10;
+                            if (max <= 100) return 10;
+                            if (max <= 250) return 25;
+                            return Math.ceil(max / 10 / 5) * 5;
+                        }
+                    }
                 },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false,
-                    },
-                }
+                x: {}
             },
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Weekly Betting Trends'
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y} bet${context.parsed.y !== 1 ? 's' : ''}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Weekly Wagered Chart
+    const weeklyWageredCtx = document.getElementById('weeklyWageredChart').getContext('2d');
+    new Chart(weeklyWageredCtx, {
+        type: 'line',
+        data: {
+            labels: weeklyData.map(w => `Week ${w.week}`),
+            datasets: [{
+                label: 'Total Wagered',
+                data: weeklyData.map(w => w.total_wagered),
+                borderColor: 'rgba(34, 197, 94, 1)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {}
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `$${context.parsed.y.toLocaleString()}`;
+                        }
+                    }
                 }
             }
         }
