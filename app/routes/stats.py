@@ -199,6 +199,9 @@ def calculate_current_streak(user_id):
 def analytics():
     """Display comprehensive analytics dashboard"""
     try:
+        # Force rollback any existing failed transaction
+        db.session.rollback()
+        
         current_user = get_current_user()
         
         # Get week-based statistics
